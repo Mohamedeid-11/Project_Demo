@@ -11,8 +11,10 @@ extern QSharedPointer<User> users[1000];
 extern QSharedPointer<User> loged_in_user;
 
 extern int num_of_recipes;
-extern short recipes_id_to_index[10000]; // hashtable to recipes IDs to help in deleteing recipes and saving data (-1 means doesn't exist)
 extern QSharedPointer<Recipe> recipes[1000];
+
+extern int next_id;
+extern short recipes_id_to_index[10000]; // hashtable to recipes IDs to help in deleteing recipes and saving data (-1 means doesn't exist)
 
 
 #endif // GLOBAL_H
