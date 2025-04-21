@@ -224,6 +224,8 @@ void load_recipes()
         recipes_id_to_index[recipe_ptr->id] = i;
     }
 
+    if(num_of_recipes) next_id = recipes[num_of_recipes-1]->id+1;
+
     file.close();
     qInfo() << file_name << " was loaded successfully!";
 }
