@@ -78,8 +78,8 @@ void MainWindow::create_recipe_page(QSharedPointer<Recipe> r_ptr)
         QLabel *category = new QLabel(categ);
 
         QString l;
-        if(r_ptr->category == 0) l = "متوسط";
-        else if(r_ptr->category == 1) l = "سهل";
+        if(r_ptr->level == 0) l = "سهل";
+        else if(r_ptr->level == 1) l = "متوسط";
         else l = "صعب";
         QLabel *level = new QLabel(l);
 
@@ -173,16 +173,3 @@ void MainWindow::on_home_page_btn_clicked()
     QWidget *home_page = ui->stackedWidget->widget(0);
     ui->stackedWidget->setCurrentWidget(home_page);
 }
-
-// save data before closing file
-// void MainWindow::closeEvent(QCloseEvent *event)
-// {
-//     for(Recipe r : recipes)
-//     {
-
-//     }
-//     event->accept();
-// }
-
-
-
