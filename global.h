@@ -6,8 +6,7 @@
 #include "user.h"
 
 extern int num_of_users;
-// extern short users_id_to_index[10000];
-extern QSharedPointer<User> users[1000]; // we need it global as we can log in multible times
+extern QSharedPointer<User> users[1000];
 
 extern QSharedPointer<User> loged_in_user;
 
