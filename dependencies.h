@@ -1,6 +1,7 @@
-#ifndef DEPENDENCIES_H
-#define DEPENDENCIES_H
-
+#pragma once
+#include <iostream>
+#include <string>
+#include <utility>
 #include <QDebug>
 #include <QTextStream>
 #include <QFile>
@@ -9,6 +10,6 @@
 #include <QGridLayout>
 #include <QListWidget>
 #include <QMessageBox>
+#include <QCloseEvent>
+#include <QFileDialog>
 
-
-#endif // DEPENDENCIES_H

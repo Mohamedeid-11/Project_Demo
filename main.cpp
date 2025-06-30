@@ -5,39 +5,45 @@
 
 #include <QApplication>
 
-int main(int argc, char *argv[])
+int main(int argc, char* argv[])
 {
-    QApplication a(argc, argv);
+	QApplication a(argc, argv);
 
-    // intialize recipes_id_to_index
-    for(int  i = 0; i < 10000; i++)
-        recipes_id_to_index[i] = -1;
+	// intialize recipes_id_to_index
+	for (int i = 0; i < 10000; i++)
+		recipes_id_to_index[i] = -1;
 
-    load_users();
-    load_recipes();
+	load_recipes(recipes, recipes_count);
+	load_users();
 
-    Dialog dialog;
-    MainWindow mainWindow;
+	Dialog dialog;
+	dialog.show();
 
-    // Connect signals to switch between windows
-    QObject::connect(&dialog, &Dialog::switchToMainWindow, [&]() {
-        dialog.hide();
-        mainWindow.show();
-    });
-    QObject::connect(&mainWindow, &MainWindow::switchToDialog, [&]() {
-        mainWindow.hide();
-        dialog.show();
-    });
+	MainWindow* mainWindow = nullptr;
 
-    // Connect signal to save data whan app is about to Quit
-    QObject::connect(&a, &QCoreApplication::aboutToQuit, [&]() {
-        save_users();
-        save_recipes();
-    });
+	// Connect signals to switch between windows
+	QObject::connect(&dialog, &Dialog::switchToMainWindow, &dialog, [&]() 
+	{
+		dialog.hide();
+		delete mainWindow;
+		mainWindow = new MainWindow();
+		mainWindow->show();
 
-    dialog.show();
+		QObject::connect(mainWindow, &MainWindow::switchToDialog, mainWindow, [&]() 
+		{
+			mainWindow->hide();
+			dialog.show();
+		});
 
-    return a.exec();
+	});
+
+
+	// Connect signal to save data whan app is about to Quit
+	QObject::connect(&a, &QCoreApplication::aboutToQuit, [&]() {
+		save_recipes(recipes, recipes_count);
+		save_users();
+	});
+
+
+	return a.exec();
 }
-
-// IDs are increasing so we can binary serach

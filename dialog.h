@@ -1,23 +1,23 @@
-#ifndef DIALOG_H
-#define DIALOG_H
+#pragma once
 
 #include <QDialog>
+#include "ui_dialog.h"
 #include "global.h"
 
-namespace Ui {
-class Dialog;
-}
+QT_BEGIN_NAMESPACE
+namespace Ui { class DialogClass; };
+QT_END_NAMESPACE
 
 class Dialog : public QDialog
 {
     Q_OBJECT
 
 public:
-    explicit Dialog(QWidget *parent = nullptr);
+    Dialog(QWidget *parent = nullptr);
     ~Dialog();
 
 private:
-    Ui::Dialog *ui;
+    Ui::DialogClass *ui;
 
 private slots:
     void on_log_in_btn_clicked();
@@ -26,8 +26,4 @@ private slots:
 
 signals:
     void switchToMainWindow();
-
-
 };
-
-#endif // DIALOG_H

@@ -1,9 +1,8 @@
 #include "dialog.h"
-#include "ui_dialog.h"
 
 Dialog::Dialog(QWidget *parent)
     : QDialog(parent)
-    , ui(new Ui::Dialog)
+    , ui(new Ui::DialogClass())
 {
     ui->setupUi(this);
 }
@@ -12,7 +11,6 @@ Dialog::~Dialog()
 {
     delete ui;
 }
-
 
 void Dialog::on_log_in_btn_clicked()
 {
@@ -25,14 +23,14 @@ void Dialog::on_log_in_btn_clicked()
     password = password.trimmed();
 
     // make sure user entered data
-    if(username.size() == 0 || password.size() == 0)
+    if (username.size() == 0 || password.size() == 0)
     {
         qWarning() << "Enter a Username and a Password";
         ui->warning_label->setText("Enter a Username and a Password");
         return;
     }
 
-    if(username.contains(" ") || password.contains(" "))
+    if (username.contains(" ") || password.contains(" "))
     {
         qWarning() << "Username and Password can't contain whitespace";
         ui->warning_label->setText("Username and Password can't contain whitespace");
@@ -40,19 +38,44 @@ void Dialog::on_log_in_btn_clicked()
     }
 
     // search for user
-    for(int i = 0; i < num_of_users; i++)
+    for (int i = 0; i < users_count; i++)
     {
-        if(users[i]->username == username && users[i]->password == password)
+        if (users[i]->username == username && users[i]->password == password)
         {
-            loged_in_user = users[i];
+            user = users[i];
             qInfo() << username << " loged in succesfully!";
+
+            // Check if there ware deleted recipes in favorite
+            // in case recipes deleted in previous sessions(log out without closing the app)
+            // were in the favorite array of the current user
+
+            int &fav_count = user->favorites_count;
+            for (int l = 0, r = fav_count - 1; l < r; l++)
+            {
+                while (l < r && recipes_id_to_index[user->favorites[r]->id] == -1)
+                    r--;
+
+                if (recipes_id_to_index[user->favorites[l]->id] == -1)
+                {
+                    std::swap(user->favorites[l], user->favorites[r]);
+                    r--;
+                }
+            }
+            int deleted = 0;
+            for (int i = fav_count-1; i >= 0; i--)
+            {
+                if (recipes_id_to_index[user->favorites[i]->id] != -1) break;
+                else deleted++;
+            }
+            fav_count -= deleted;
+
             emit switchToMainWindow();
             break;
         }
     }
 
     // if user was not found
-    if(loged_in_user.isNull())
+    if (user.isNull())
         QMessageBox::information(this, "Message", "User was not found please register first.");
 
     ui->username_line->clear();
@@ -72,14 +95,14 @@ void Dialog::on_register_btn_clicked()
     confirm_password = confirm_password.trimmed();
 
     // make sure user entered data
-    if(!username.size()| !password.size()|| !confirm_password.size())
+    if (!username.size() || !password.size() || !confirm_password.size())
     {
         qWarning() << "Enter a Username and a Password";
         ui->warning_label->setText("Enter a Username and a Password");
         return;
     }
 
-    if(username.contains(" ") || password.contains(" "))
+    if (username.contains(" ") || password.contains(" "))
     {
         qWarning() << "Username and Password can't contain whitespace";
         ui->warning_label->setText("Username and Password can't contain whitespace");
@@ -87,9 +110,9 @@ void Dialog::on_register_btn_clicked()
     }
 
     // make sure user entered a unique username
-    for(int i = 0; i < num_of_users; i++)
+    for (int i = 0; i < users_count; i++)
     {
-        if(username == users[i]->username)
+        if (username == users[i]->username)
         {
             qCritical() << "This username already exists";
             ui->warning_label->setText("This username already exists");
@@ -97,7 +120,7 @@ void Dialog::on_register_btn_clicked()
         }
     }
 
-    if(confirm_password != password)
+    if (confirm_password != password)
     {
         qCritical() << "Passwords are not identical";
         ui->warning_label->setText("Passwords are not identical");
@@ -105,8 +128,8 @@ void Dialog::on_register_btn_clicked()
     }
 
     bool isAdmin;
-    if(ui->admin_btn->isChecked()) isAdmin = true;
-    else if(ui->user_btn->isChecked()) isAdmin = false;
+    if (ui->admin_btn->isChecked()) isAdmin = true;
+    else if (ui->user_btn->isChecked()) isAdmin = false;
     else
     {
         qCritical() << "Select User or Admin";
@@ -116,11 +139,13 @@ void Dialog::on_register_btn_clicked()
 
     // create new user and append it to the users list
     QSharedPointer<User> user_ptr(new User());
+    user = user_ptr;
+
     user_ptr->isAdmin = isAdmin;
     user_ptr->username = username;
     user_ptr->password = password;
-    users[num_of_users] = user_ptr;
-    num_of_users++;
+    users[users_count] = user_ptr;
+    users_count++;
 
     // switch to main window and clear register page and switch to log in
     emit switchToMainWindow();
@@ -139,20 +164,3 @@ void Dialog::on_register_page_btn_clicked()
     ui->warning_label->setText("");
     ui->stackedWidget->setCurrentWidget(ui->register_page);
 }
-
-
-// change register page content
-// QLabel *confirm_pass = new QLabel();
-// confirm_pass->setText("Confirm Password: ");
-// QLineEdit *confirm_pass_line = new QLineEdit();
-
-// ui->gridLayout_6->addWidget(confirm_pass, 2, 0);
-// ui->gridLayout_6->addWidget(confirm_pass_line, 2, 1);
-
-// ui->log_in_btn->setText("Register");
-
-// ui->register_field->setVisible(false);
-
-
-
-

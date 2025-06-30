@@ -1,20 +1,14 @@
-#ifndef GLOBAL_H
-#define GLOBAL_H
+#pragma once
 
 #include "dependencies.h"
-#include "recipe.h"
-#include "user.h"
+#include "structures.h"
 
-extern int num_of_users;
+extern int users_count;
 extern QSharedPointer<User> users[1000];
+extern QSharedPointer<User> user;
 
-extern QSharedPointer<User> loged_in_user;
-
-extern int num_of_recipes;
+extern int recipes_count;
 extern QSharedPointer<Recipe> recipes[1000];
 
-extern int next_id;
-extern short recipes_id_to_index[10000]; // hashtable to recipes IDs to help in deleteing recipes and saving data (-1 means doesn't exist)
-
-
-#endif // GLOBAL_H
+// hashtable to recipes IDs to help in deleteing recipes and saving data (-1 means doesn't exist)
+extern short recipes_id_to_index[10000]; // intialized by (-1) in main
